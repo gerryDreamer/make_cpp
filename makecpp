@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# Copyright (C) 2018 gerry dreamer ventures [Gerishom Muzembi]
+ #
+ # This program is free software; you can redistribute it and/or
+ # modify it under the terms of the GNU General Public License
+ # as published by the Free Software Foundation; either version 2
+ # of the License, or (at your option) any later version.
+ #
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program; if not, write to the Free Software
+ # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ #
+ # contact: gwadunga5@gmail.com
+ # For more information/commentary
+ #
+#create a cpp file from args
+#take 4 args, the header, the source, the main, the shell script
+#limit file creation to args specified
+#enter names without extensions
+#files are created on the working directory
+#the default standard is c++11 with thread support
+
+#path=$HOME/Documents/templates
+if test $# -eq 1; then
+	#only one arg specified
+	#create a main source and a shell script only
+	main=$1".cpp"
+	script=$1".sh"
+	obj=$1	
+
+	#create main and shell script
+	echo > $main	
+	
+	echo "#!/bin/bash" >$script
+	echo "g++ $main -lpthread -o $obj -std=c++11" >>$script
+	echo "if test -f $obj; then">>$script
+	echo "./$obj">>$script
+	echo "fi">>$script
+	chmod a+x $script
+
+elif test $# -gt 1 && test $# -le 4; then
+	header=$1".h"
+	source=$2".cpp"
+	main=$3".cpp"
+	script=$4".sh"
+	obj=$3
+
+	#create shell script
+	echo "#!/bin/bash" >$script
+	echo "g++ $source $header $main -lpthread -o $obj -std=c++11" >>$script
+	echo "if test -f $obj; then">>$script
+	echo "./$obj">>$script
+	echo "fi">>$script
+	chmod a+x $script
+	#create header,source,main
+	echo > $header
+	echo > $source
+	echo > $main
+
+	#append extra data to the header
+	header_data=$1"_h"
+	header_data=${header_data^^} #convert to uppercase
+	
+	echo "#ifndef $header_data "> $header
+	echo "#define $header_data">> $header
+	echo >> $header
+	echo >> $header
+	echo "#endif //$header_data" >> $header
+else
+	echo "The arguments are one too many"	
+fi
+
+#append cpp data if main exists
+if test -f $main
+then
+	echo "#include <iostream>">$main
+	echo "">>$main
+	echo "using namespace std;">>$main
+	echo "int main (int argc, char const* argv[])" >>$main
+	echo "{" >>$main
+	echo >>$main
+	echo >>$main
+	echo "return 0" >>$main
+	echo "}" >>$main
+fi
